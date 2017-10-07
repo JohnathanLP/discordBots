@@ -1,0 +1,51 @@
+import discord
+import asyncio
+
+client = discord.Client()
+voice = NULL
+cmdtoken = '%'
+
+@client.event
+async def on_ready():
+     print('Logged in as')
+     print(client.user.name)
+     print(client.user.id)
+     print('-------')
+
+@client.event
+async def on_message(message):
+    #prevents bot from responding to itself
+    if message.author == client.user:
+        return
+
+    #generic greeing command
+    if message.content.startswith(cmdtoken + 'hello'):
+        msg = 'Hello {0.author.mention}'.format(message)
+        await client.send_message(message.channel, msg)
+
+    #loads music bot with a playlist - will be replaced when this bot becomes musical
+    if message.content.startswith(cmdtoken + 'djplaylist') or message.content.startswith('!djpl'):
+        #gets entire command string
+        filename = message.content
+        #removes first word, leaving parameter
+        filename = filename.split(' ',1)[1]
+        #checks if file exists
+        if not os.path.exists(filename + ".txt" ):
+             await client.send_message(message.channel, 'File not found!')
+        #outputs playlist to chat
+        else:
+            file = open(filename + ".txt","r")
+            for line in file:
+                msg = '!play ' + line
+                await client.send_message(message.channel, msg) 
+
+    #plays chatwheel sound
+    if message.content.startswith(cmdtoken + 'chat'):
+        msg = 'Playing chatwheel sound'.format(message)
+        await client.send_message(message.channel, msg)
+        voice = client.join_voice_channel(262353811421659137)
+        #create_ffmpeg_player('chatwheelsounds/monk.wav')
+
+
+client.run('MzY2MTIwODU5NzEyMjI1Mjgx.DLoQLw.gRHtMi5FMPBcP7nRrtMO3NLTv_4')
+

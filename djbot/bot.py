@@ -1,7 +1,43 @@
 import discord
-import asyncio
+import os.path
 
 client = discord.Client()
+
+@client.event
+async def on_message(message):
+    # we do not want the bot to reply to itself
+    if message.author == client.user:
+        return
+
+    if message.content.startswith('!hello'):
+        msg = 'Hello {0.author.mention}'.format(message)
+        #msg = '/play witchdoctor sings a song'.format(message)
+        await client.send_message(message.channel, msg)
+
+    if message.content.startswith('!testmusic'):
+        msg = '!summon'.format(message)
+        await client.send_message(message.channel, msg)
+
+    if message.content.startswith('!wd'):
+        msg = '!play witchdoctor sings a song'.format(message)
+        await client.send_message(message.channel, msg)
+
+    if message.content.startswith('!summondj'):
+        channel = client.get_channel('226052669830070273')
+        await client.join_voice_channel(channel)
+
+    if message.content.startswith('!djplaylist') or message.content.startswith('!djpl'):
+        filename = message.content
+        #print(filename)
+        filename = filename.split(' ',1)[1]
+        #print(filename) 
+        if not os.path.exists(filename + ".txt" ):
+             await client.send_message(message.channel, 'File not found!')
+        else:
+             file = open(filename + ".txt","r")
+             for line in file:
+                  msg = '!play ' + line
+                  await client.send_message(message.channel, msg) 
 
 @client.event
 async def on_ready():
@@ -10,18 +46,4 @@ async def on_ready():
     print(client.user.id)
     print('------')
 
-@client.event
-async def on_message(message):
-    if message.content.startswith('!test'):
-        counter = 0
-        tmp = await client.send_message(message.channel, 'Calculating messages...')
-        async for log in client.logs_from(message.channel, limit=100):
-            if log.author == message.author:
-                counter += 1
-
-        await client.edit_message(tmp, 'You have {} messages.'.format(counter))
-    elif message.content.startswith('!sleep'):
-        await asyncio.sleep(5)
-        await client.send_message(message.channel, 'Done sleeping')
-
-client.run('token')
+client.run('MzI3NjEzMzIxNjI2Nzc5NjQ4.DC39vA.QIsKaA78TN7yI9NTp0AAIPll-Wg')

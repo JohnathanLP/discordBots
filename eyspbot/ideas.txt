@@ -3,4 +3,5 @@
 -add spam protection and permissions
 -add more sounds
 -welcome sounds when a user connects
+-add more support for randomized sounds
 

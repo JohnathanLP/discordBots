@@ -1,6 +1,7 @@
 import discord
 import os.path
 import asyncio
+from random import randint
 
 client = discord.Client()
 voice = 0
@@ -79,6 +80,8 @@ async def on_message(message):
         player = await voice.create_ytdl_player(url)
         player.start()
 
+    #list availible chatwheel sounds
+
     #plays chatwheel sound    
     #elif message.content.startswith(cmdtoken + 'chat') or message.content.startswith(cmdtoken + 'cw'):
     elif message.content.startswith(cmdtoken):
@@ -89,11 +92,16 @@ async def on_message(message):
             channel = message.author.voice.voice_channel
             voice = await client.join_voice_channel(channel)
         else:
-            print ('Client is voice connected, may not be correct channel...')
+            print ('Client is voice connected, may not be correct channel...') 
         #gets whole command string, removes first word, leaving parameter
-        #sound = message.content.split(' ',1)[1]
-        #filename = 'chatwheelsounds/' + sound
-        filename = 'chatwheelsounds/' + message.content[1:]
+        sound = message.content[1:]
+        #handles navi sounds
+        if sound == 'navi':
+            index = randint(0,28)
+            filename = 'chatwheelsounds/navi' + index
+            print (filename)
+        else:
+            filename = 'chatwheelsounds/' + sound
         print(filename)
         #checks if sound exists, tests for mp3 or wav, and plays sound
         if os.path.exists(filename + '.wav'): 

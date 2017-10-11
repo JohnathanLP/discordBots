@@ -2,6 +2,7 @@ import discord
 import os.path
 import asyncio
 from random import randint
+import time
 
 client = discord.Client()
 voice = 0
@@ -62,8 +63,8 @@ async def on_message(message):
         global voice
         msg = 'Bye everyone!'
         await client.send_message(message.channel, msg)
-        if client.is_voice_connected(message.server):
-            await voice.disconnect()
+        #if client.is_voice_connected(message.server):
+        await voice.disconnect()
 
     #plays music from YouTube
     elif message.content.startswith(cmdtoken + 'play'):
@@ -98,7 +99,7 @@ async def on_message(message):
         #handles navi sounds
         if sound == 'navi':
             index = randint(0,28)
-            filename = 'chatwheelsounds/navi' + index
+            filename = 'chatwheelsounds/navi/' + str(index)
             print (filename)
         else:
             filename = 'chatwheelsounds/' + sound
@@ -112,7 +113,10 @@ async def on_message(message):
             player.start()
         else:
             await client.send_message(message.channel, 'File not found!')
+        while not player.is_done():
+            time.sleep(.01)
         await client.delete_message(message)
+        
 
         #Leave this command ^ last for now
 

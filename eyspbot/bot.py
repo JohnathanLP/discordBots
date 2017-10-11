@@ -28,11 +28,13 @@ async def on_message(message):
 
     #help command
     elif message.content.startswith(cmdtoken + 'help'):
+        #TODO Clean this mess up, maybe format it nice
         await client.send_message(message.channel, 'Discord bot by Eysp - WIP')
         await client.send_message(message.channel, 'Please report any bugs or feature requests directly to me!')
         await client.send_message(message.channel, 'Commands are as follows:')
         await client.send_message(message.channel, (cmdtoken + 'chat [SOUNDNAME] - Plays a chatwheel sound.'))
-        await client.send_message(message.channel, (cmdtoken + 'djplaylist [PLAYLISTNAME] - Loads a new playlist into the external musicbot. Musicbot must be running.'))
+        await client.send_message(message.channel, (cmdtoken + 'djplaylist [PLAYLISTNAME] - Loads a new playlist into the external musicbot. Musicbot must be running.')) 
+        await client.send_message(message.channel, (cmdtoken + 'listsounds - Sends you a DM listing all available chatwheel sounds.'))
         await client.send_message(message.channel, (cmdtoken + 'bye - Dismisses the bot from voice chat'))
         await client.send_message(message.channel, 'Future planned/hoped for features:')
         await client.send_message(message.channel, 'Command to list all availible chatwheel sounds')
@@ -82,6 +84,25 @@ async def on_message(message):
         player.start()
 
     #list availible chatwheel sounds
+    #TODO Clean this mess up, maybe format it nice
+    elif message.content.startswith(cmdtoken + 'listsounds') or message.content.startswith(cmdtoken + 'cwlist'):
+        #lists all files contained in chatwheelsounds directory
+        await client.send_message(message.author, 'Normal chatwheel sounds:')
+        filelist = [f for f in os.listdir('chatwheelsounds') if os.path.isfile(os.path.join('chatwheelsounds', f))]
+        msg = ''
+        for filename in filelist:
+            msg = msg + (filename[:len(filename)-4]) + '\n'
+            #print(msg)
+        await client.send_message(message.author, msg)
+        #lists random sound commands
+        await client.send_message(message.author, 'Randomized chatwheel sounds:')
+        folderlist = [f for f in os.listdir('chatwheelsounds') if not os.path.isfile(os.path.join('chatwheelsounds', f))]
+        msg = ''
+        for foldername in folderlist:
+            msg = msg + (foldername) + '\n'
+            #print(msg)
+        await client.send_message(message.author, msg)
+        await client.delete_message(message)
 
     #plays chatwheel sound    
     #elif message.content.startswith(cmdtoken + 'chat') or message.content.startswith(cmdtoken + 'cw'):

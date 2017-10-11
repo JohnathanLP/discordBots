@@ -29,21 +29,20 @@ async def on_message(message):
     #help command
     elif message.content.startswith(cmdtoken + 'help'):
         #TODO Clean this mess up, maybe format it nice
-        await client.send_message(message.channel, 'Discord bot by Eysp - WIP')
-        await client.send_message(message.channel, 'Please report any bugs or feature requests directly to me!')
-        await client.send_message(message.channel, 'Commands are as follows:')
-        await client.send_message(message.channel, (cmdtoken + 'chat [SOUNDNAME] - Plays a chatwheel sound.'))
-        await client.send_message(message.channel, (cmdtoken + 'djplaylist [PLAYLISTNAME] - Loads a new playlist into the external musicbot. Musicbot must be running.')) 
-        await client.send_message(message.channel, (cmdtoken + 'listsounds - Sends you a DM listing all available chatwheel sounds.'))
-        await client.send_message(message.channel, (cmdtoken + 'bye - Dismisses the bot from voice chat'))
-        await client.send_message(message.channel, 'Future planned/hoped for features:')
-        await client.send_message(message.channel, 'Command to list all availible chatwheel sounds')
-        await client.send_message(message.channel, 'Command to list all availible playlists')
-        await client.send_message(message.channel, 'Ability to create/edit playlists from Discord chat')
-        await client.send_message(message.channel, 'Better message cleanup')
-        await client.send_message(message.channel, 'Direct integration of musicbot funcitonality')
-        await client.send_message(message.channel, 'External webpage GUI (to control chatwheel, etc. from a phone or second monitor)')
-        await client.send_message(message.channel, 'DOTA2 Timers and alerts')
+        msg = 'Discord Bot by Eysp - WIP \n'
+        msg = msg + 'Please report any bugs or feature requests directly to me!\nCommands are as follows:\n'
+        msg = msg + (cmdtoken + 'chat [SOUNDNAME] - Plays a chatwheel sound\n')
+        msg = msg + (cmdtoken + 'djplaylist [PLAYLISTNAME] - Loads a new playlist into the musicbot. Musicbot must be running\n')
+        msg = msg + (cmdtoken + 'listsounds - Sends you a DM listing all available chat sounds\n')
+        msg = msg + (cmdtoken + 'bye - Dismisses the bot from voice chat\n\n')
+        msg = msg + 'Future planned features:\n'
+        msg = msg + 'Command to list all availible playlists\n'
+        msg = msg + 'Ability to create/edit playlists from Discord chat\n'
+        msg = msg + 'Better message cleanup (especially for incorrectly typed commands)\n'
+        msg = msg + 'Direct integration of musicbot\n'
+        msg = msg + 'External (webpage) GUI to control chatwheel, etc. from a phone or second monitor\n'
+        msg = msg + 'DOTA2 Timers and alerts'
+        await client.send_message(message.author, msg)
 
     #loads music bot with a playlist - will be replaced when this bot becomes musical
     elif message.content.startswith(cmdtoken + 'djplaylist') or message.content.startswith('!djpl'):
@@ -64,10 +63,12 @@ async def on_message(message):
     elif message.content.startswith(cmdtoken + 'bye') or message.content.startswith(cmdtoken + 'goodbye'):
         global voice
         msg = 'Bye everyone!'
-        await client.send_message(message.channel, msg)
+        reply = await client.send_message(message.channel, msg)
         #if client.is_voice_connected(message.server):
         await voice.disconnect()
         await client.delete_message(message)
+        time.sleep(2)
+        await client.delete_message(reply)
 
     #plays music from YouTube
     elif message.content.startswith(cmdtoken + 'play'):
@@ -108,17 +109,27 @@ async def on_message(message):
     #plays chatwheel sound    
     #elif message.content.startswith(cmdtoken + 'chat') or message.content.startswith(cmdtoken + 'cw'):
     elif message.content.startswith(cmdtoken):
-        #test if connected to voice, connect if needed
-        global voice
-        if not client.is_voice_connected(message.server): 
-            print ('Client is not currently voice connected, connecting...')
-            channel = message.author.voice.voice_channel
-            voice = await client.join_voice_channel(channel)
-        else:
-            print ('Client is voice connected, may not be correct channel...') 
+        #test if bot and user are connected to voice
+        user_connected = not (message.author.voice.voice_channel == None)
+        bot_connected = client.is_voice_connected(message.server)
+        #move or leave bot as needed
+        if bot_connected and user_connected:
+            print ('moving bot to user\'s channel')
+            await voice.move_to(message.author.voice.voice_channel)
+        if not bot_connected and user_connected:
+            print ('connecting bot to user\'s channel')
+            voice = await client.join_voice_channel(message.author.voice.voice_channel)
+        if bot_connected and not user_connected:
+            print ('leaving bot in place')
+        if not bot_connected and not user_connected:
+            print ('cancelling')
+            await client.send_message(message.channel, 'You and/or the bot must be connected to a voice channel!')
+            return 
+
         #gets whole command string, removes first word, leaving parameter
         sound = message.content[1:]
         #handles navi sounds
+        #TODO modularize randomized sounds
         if sound == 'navi':
             index = randint(0,28)
             filename = 'chatwheelsounds/navi/' + str(index)

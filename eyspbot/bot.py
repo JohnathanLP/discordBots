@@ -67,6 +67,7 @@ async def on_message(message):
         await client.send_message(message.channel, msg)
         #if client.is_voice_connected(message.server):
         await voice.disconnect()
+        await client.delete_message(message)
 
     #plays music from YouTube
     elif message.content.startswith(cmdtoken + 'play'):

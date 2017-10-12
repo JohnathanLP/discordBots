@@ -85,6 +85,11 @@ async def on_message(message):
         player = await voice.create_ytdl_player(url)
         player.start()
 
+
+    #downloads and plays from YouTube
+    elif message.content.startswith(cmdtoken + 'dlplay'):
+
+
     #list availible chatwheel sounds
     #TODO Clean this mess up, maybe format it nice
     elif message.content.startswith(cmdtoken + 'listsounds') or message.content.startswith(cmdtoken + 'cwlist'):

@@ -3,6 +3,7 @@ import os.path
 import asyncio
 from random import randint
 import time
+from subprocess import call
 
 client = discord.Client()
 voice = 0
@@ -88,7 +89,14 @@ async def on_message(message):
 
     #downloads and plays from YouTube
     elif message.content.startswith(cmdtoken + 'dlplay'):
-
+        url = message.content.split(' ',1)[1]
+        url_id = message.content.split ('=',1)[1]
+        print(url)
+        print(url_id)
+        command = 'youtube-dl ' + url + ' -x --audio-format mp3 --id'
+        call(command.split(), shell=False)
+        command = 'mv ' + url_id + '.mp3 songcache'
+        call(command.split(), shell=False)
 
     #list availible chatwheel sounds
     #TODO Clean this mess up, maybe format it nice

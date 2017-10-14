@@ -155,7 +155,7 @@ async def on_message(message):
             player = voice.create_ffmpeg_player(filename + '.wav')
             player.start()
         elif os.path.exists(filename + '.mp3'):
-            player = voice.create_ffmpeg_player(filename + '.wav')
+            player = voice.create_ffmpeg_player(filename + '.mp3')
             player.start()
         else:
             await client.send_message(message.channel, 'File not found!')
@@ -166,5 +166,6 @@ async def on_message(message):
 
         #Leave this command ^ last for now
 
+print('test')
 client.run('MzY2MTIwODU5NzEyMjI1Mjgx.DLoQLw.gRHtMi5FMPBcP7nRrtMO3NLTv_4')
 

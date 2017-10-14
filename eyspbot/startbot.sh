@@ -6,7 +6,7 @@ case "$(pidof python3 | wc -w)" in
      tmux send -t 0.0 sudo\ python3\ /home/pi/discordBots/eyspbot/bot.py ENTER
      ;;
 1)
-     echo "Bot is already running: $(date)" >> ~/discordBots/eyspbot/log.txt
+     #echo "Bot is already running: $(date)" >> ~/discordBots/eyspbot/log.txt
      ;;
 *)
 esac

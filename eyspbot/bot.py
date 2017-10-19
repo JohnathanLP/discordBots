@@ -4,6 +4,7 @@ import asyncio
 from random import randint
 import time
 from subprocess import call
+import utils.py
 
 client = discord.Client()
 voice = 0
@@ -97,6 +98,9 @@ async def on_message(message):
         call(command.split(), shell=False)
         command = 'mv ' + url_id + '.mp3 songcache'
         call(command.split(), shell=False)
+
+    elif message.content.startswith(cmdtoken + 'test'):
+        getArgs(message)
 
     #list availible chatwheel sounds
     #TODO Clean this mess up, maybe format it nice

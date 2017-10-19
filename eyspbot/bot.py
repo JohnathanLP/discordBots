@@ -4,7 +4,7 @@ import asyncio
 from random import randint
 import time
 from subprocess import call
-import utils.py
+import utils
 
 client = discord.Client()
 voice = 0
@@ -49,7 +49,8 @@ async def on_message(message):
     #loads music bot with a playlist - will be replaced when this bot becomes musical
     elif message.content.startswith(cmdtoken + 'djplaylist') or message.content.startswith('!djpl'):
         #gets entire command string, removes first word, leaving parameter
-        filename = 'playlists/' + message.content.split(' ',1)[1]
+        filename = 'playlists/' + utils.getArgs(message)[0]
+#        filename = 'playlists/' + message.content.split(' ',1)[1]
         #checks if file exists
         if not os.path.exists(filename + ".txt" ):
              await client.send_message(message.channel, 'File not found!')
@@ -90,17 +91,16 @@ async def on_message(message):
 
     #downloads and plays from YouTube
     elif message.content.startswith(cmdtoken + 'dlplay'):
-        url = message.content.split(' ',1)[1]
-        url_id = message.content.split ('=',1)[1]
+        url = utils.getArgs(message)[0]
+        url_id = url.split('=',1)[1]
+#        url = message.content.split(' ',1)[1]
+#        url_id = message.content.split ('=',1)[1]
         print(url)
         print(url_id)
-        command = 'youtube-dl ' + url + ' -x --audio-format mp3 --id'
+        command = 'youtube-dl ' + url + ' -x --audio-format wav --id'
         call(command.split(), shell=False)
-        command = 'mv ' + url_id + '.mp3 songcache'
+        command = 'mv ' + url_id + '.wav songcache/'
         call(command.split(), shell=False)
-
-    elif message.content.startswith(cmdtoken + 'test'):
-        getArgs(message)
 
     #list availible chatwheel sounds
     #TODO Clean this mess up, maybe format it nice

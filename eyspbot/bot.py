@@ -50,7 +50,6 @@ async def on_message(message):
     elif message.content.startswith(cmdtoken + 'djplaylist') or message.content.startswith('!djpl'):
         #gets entire command string, removes first word, leaving parameter
         filename = 'playlists/' + utils.getArgs(message)[0]
-#        filename = 'playlists/' + message.content.split(' ',1)[1]
         #checks if file exists
         if not os.path.exists(filename + ".txt" ):
              await client.send_message(message.channel, 'File not found!')
@@ -88,19 +87,41 @@ async def on_message(message):
         player = await voice.create_ytdl_player(url)
         player.start()
 
-
     #downloads and plays from YouTube
     elif message.content.startswith(cmdtoken + 'dlplay'):
+        #extracts url and id
         url = utils.getArgs(message)[0]
         url_id = url.split('=',1)[1]
-#        url = message.content.split(' ',1)[1]
-#        url_id = message.content.split ('=',1)[1]
-        print(url)
-        print(url_id)
-        command = 'youtube-dl ' + url + ' -x --audio-format wav --id'
-        call(command.split(), shell=False)
-        command = 'mv ' + url_id + '.wav songcache/'
-        call(command.split(), shell=False)
+        #tests to see if url is already in cache
+        if not os.path.exists('songcache/' + url_id + '.txt'):
+            #downloads song if needed
+            command = 'youtube-dl ' + url + ' -x --audio-format wav --id'
+            call(command.split(), shell=False)
+            command = 'mv ' + url_id + '.wav songcache/'
+            call(command.split(), shell=False)
+        #test if bot and user are connected to voice
+        user_connected = not (message.author.voice.voice_channel == None)
+        bot_connected = client.is_voice_connected(message.server)
+        #move or leave bot as needed
+        if bot_connected and user_connected:
+            print ('moving bot to user\'s channel')
+            await voice.move_to(message.author.voice.voice_channel)
+        if not bot_connected and user_connected:
+            print ('connecting bot to user\'s channel')
+            voice = await client.join_voice_channel(message.author.voice.voice_channel)
+        if bot_connected and not user_connected:
+            print ('leaving bot in place')
+        if not bot_connected and not user_connected:
+            print ('cancelling')
+            await client.send_message(message.channel, 'You and/or the bot must be connected to a voice channel!')
+            return 
+        #plays sound
+        player = voice.create_ffmpeg_player('songcache/' + url_id + '.wav')
+        player.start()
+        while not player.is_done():
+            time.sleep(.01)
+        await client.delete_message(message)
+        
 
     #list availible chatwheel sounds
     #TODO Clean this mess up, maybe format it nice
@@ -122,7 +143,6 @@ async def on_message(message):
             #print(msg)
         await client.send_message(message.author, msg)
         await client.delete_message(message)
-
     #plays chatwheel sound    
     #elif message.content.startswith(cmdtoken + 'chat') or message.content.startswith(cmdtoken + 'cw'):
     elif message.content.startswith(cmdtoken):
@@ -142,7 +162,6 @@ async def on_message(message):
             print ('cancelling')
             await client.send_message(message.channel, 'You and/or the bot must be connected to a voice channel!')
             return 
-
         #gets whole command string, removes first word, leaving parameter
         sound = message.content[1:]
         #handles navi sounds

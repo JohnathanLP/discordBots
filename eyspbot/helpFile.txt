@@ -1,0 +1,16 @@
+**Discord Bot by Eysp - WIP**
+Please report any bugs or feature requests: https://github.com/JohnathanLP/discordBots/issues
+
+Commands are as follows:
+%cw [SOUNDNAME] - Plays a chatwheel sound
+%djplaylist [PLAYLISTNAME] - Loads a new playlist into the musicbot. Musicbot must be running
+%listsounds - Sends you a DM listing all available chat sounds
+%bye - Dismisses the bot from voice chat
+
+Future planned features:
+-Command to list all availible playlists
+-Ability to create/edit playlists from Discord chat
+-Better message cleanup (especially for incorrectly typed commands
+-Direct integration of musicbot
+-External (webpage) GUI to control chatwheel, etc. from a phone or second monitor
+-DOTA2 Timers and alerts
